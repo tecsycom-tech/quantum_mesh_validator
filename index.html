@@ -122,7 +122,7 @@
 
                 <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500">
                     <span>Modo de Operación:</span>
-                    <span class="text-brand font-semibold bg-brand/10 px-2 py-0.5 rounded border border-brand/20">Dual Filter</span>
+                    <span class="text-brand font-semibold bg-brand/10 px-2 py-0.5 rounded border border-brand/20">Multi-State Filter</span>
                 </div>
             </div>
 
@@ -228,27 +228,62 @@
         <!-- BANNER DE ESTADO -->
         <div id="statusBanner" class="hidden"></div>
 
-        <!-- TABLA DE REPORTE Y AUDITORÍA CON PESTAÑAS -->
+        <!-- TABLA DE REPORTE Y AUDITORÍA CON PESTAÑAS Y MULTI-SELECT -->
         <div id="reportSection" class="hidden panel-card rounded-2xl overflow-hidden shadow-sm">
             
-            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
-                <div>
-                    <h3 class="font-tech font-bold text-slate-900 text-base flex items-center gap-2">
-                        <span>REPORTE DE OBSERVACIONES REGULARIZACIÓN QUANTUM</span>
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Seleccione la vista de auditoría que desea inspeccionar, copiar para WhatsApp o exportar.</p>
-                </div>
-                
-                <div class="flex flex-wrap items-center gap-2 self-end sm:self-auto">
-                    <!-- Botón para Copiar WhatsApp Estilo Macro (Pad Fixed Width) -->
-                    <button id="btnCopyWhatsapp" onclick="copyWhatsAppFormat()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-md flex items-center gap-2 transition-all">
-                        <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i> Copiar Formato WhatsApp
-                    </button>
+            <div class="p-5 border-b border-slate-200 flex flex-col gap-4 bg-slate-50/50">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-tech font-bold text-slate-900 text-base flex items-center gap-2">
+                            <span>REPORTE DE OBSERVACIONES REGULARIZACIÓN QUANTUM</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Seleccione múltiples estados para filtrar registros a copiar o exportar.</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-2 self-start md:self-auto">
+                        <!-- Botón para Copiar WhatsApp Estilo Macro (Pad Fixed Width) -->
+                        <button id="btnCopyWhatsapp" onclick="copyWhatsAppFormat()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-md flex items-center gap-2 transition-all">
+                            <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i> Copiar Formato WhatsApp
+                        </button>
 
-                    <!-- Botón de Exportación CSV con color dinámico -->
-                    <button id="btnExport" onclick="exportToCSV()" class="px-4 py-2 text-white text-xs font-semibold rounded-lg shadow-md flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-file-excel"></i> Exportar Reporte (.CSV)
-                    </button>
+                        <!-- Botón de Exportación CSV con color dinámico -->
+                        <button id="btnExport" onclick="exportToCSV()" class="px-4 py-2 text-white text-xs font-semibold rounded-lg shadow-md flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-file-excel"></i> Exportar Reporte (.CSV)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SELECTOR DE FILTRO MULTI-ESTADO CON CHECKBOXES EN DROPDOWN -->
+                <div class="pt-3 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="relative inline-block text-left w-full sm:w-auto">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-filter text-brand"></i> Filtrar Estados Activos:
+                            </span>
+                            
+                            <!-- Botón Dropdown Multiselect -->
+                            <button type="button" id="multiSelectDropdownBtn" onclick="toggleMultiSelectDropdown()" class="w-full sm:w-64 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm flex items-center justify-between gap-2 hover:bg-slate-50 transition-colors">
+                                <span id="multiSelectText" class="truncate">Cargando estados...</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </button>
+                        </div>
+
+                        <!-- Panel Desplegable con Checkboxes -->
+                        <div id="multiSelectDropdownMenu" class="hidden absolute left-0 sm:left-32 mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200 z-50 p-3 space-y-2 max-h-64 overflow-y-auto">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                                <button type="button" onclick="selectAllStatuses(true)" class="text-[11px] font-bold text-brand hover:underline">Seleccionar Todos</button>
+                                <button type="button" onclick="selectAllStatuses(false)" class="text-[11px] font-bold text-slate-500 hover:underline">Deseleccionar Todos</button>
+                            </div>
+                            <div id="checkboxesContainer" class="space-y-1.5">
+                                <!-- Checkboxes dinámicos -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Badges de Estados Seleccionados -->
+                    <div id="activeStatusBadges" class="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
+                        <!-- Badges dinámicos -->
+                    </div>
                 </div>
             </div>
 
@@ -283,7 +318,7 @@
             </div>
 
             <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500">
-                <span>Validación Estricta: Campaña == "Edificios 800 Mbps" o Campaña Vacía</span>
+                <span>Filtro Multi-Estado Aplicado en Ambos Módulos</span>
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Procesamiento Local Exclusivo</span>
             </div>
         </div>
@@ -304,12 +339,26 @@
 
     <!-- SCRIPT DE LÓGICA DE NEGOCIO -->
     <script>
-        let alertsMesh = [];
-        let alertsCampana = [];
+        let rawAlertsMesh = [];
+        let rawAlertasCampana = [];
+        let filteredMesh = [];
+        let filteredCampana = [];
         let currentActiveTab = 'mesh';
+
+        let availableStatuses = [];
+        let selectedStatuses = new Set();
 
         const fileInput = document.getElementById('csvFileInput');
         const dropzone = document.getElementById('dropzone');
+
+        // Cerrar menú desplegable al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const dropdownBtn = document.getElementById('multiSelectDropdownBtn');
+            const dropdownMenu = document.getElementById('multiSelectDropdownMenu');
+            if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
 
         ['dragenter', 'dragover'].forEach(eventName => {
             dropzone.addEventListener(eventName, (e) => {
@@ -349,6 +398,11 @@
             });
         }
 
+        function toggleMultiSelectDropdown() {
+            const dropdownMenu = document.getElementById('multiSelectDropdownMenu');
+            dropdownMenu.classList.toggle('hidden');
+        }
+
         function analyzeData(data) {
             if (!data || data.length === 0) {
                 alert('El archivo CSV está vacío.');
@@ -363,7 +417,7 @@
 
             const campCol = getColName(['Campaña', 'Campana', 'campaña']);
             const meshCol = getColName(['Mesh_modo', 'mesh_modo', 'Mesh modo']);
-            const pedidoCol = getColName(['valida_cod_pedido', 'valida_cod_pedido', 'codigo_pedido', 'cod_pedido', 'Codigo', 'codigo']);
+            const pedidoCol = getColName(['valida_cod_pedido', 'codigo_pedido', 'cod_pedido', 'Codigo', 'codigo']);
             const dniCol = getColName(['dni_cliente', 'dni']);
             const clienteCol = getColName(['nom_cliente', 'nombre_cliente', 'cliente']);
             const estadoCol = getColName(['Estado', 'estado', 'ESTADO']);
@@ -376,13 +430,19 @@
             let totalRows = data.length;
             let totalEdificios = 0;
             let conformes = 0;
-            alertsMesh = [];
-            alertsCampana = [];
+            rawAlertsMesh = [];
+            rawAlertasCampana = [];
+
+            const statusSet = new Set();
 
             data.forEach(row => {
                 const campVal = (row[campCol] || '').toString().trim();
                 const meshVal = (row[meshCol] || '').toString().trim();
                 const estadoVal = estadoCol ? (row[estadoCol] || 'N/D').toString().trim() : 'N/D';
+
+                if (estadoVal !== 'N/D' && estadoVal !== '') {
+                    statusSet.add(estadoVal.toUpperCase());
+                }
 
                 const recordItem = {
                     Codigo: row[pedidoCol] || 'N/D',
@@ -393,43 +453,149 @@
                     Mesh_modo: meshVal === '' ? 'VACÍO / EN BLANCO' : meshVal
                 };
 
+                // Detección Campaña Vacía
                 if (campVal === '' || campVal.toLowerCase() === 'null' || campVal.toLowerCase() === 'nan') {
-                    alertsCampana.push(recordItem);
+                    rawAlertasCampana.push(recordItem);
                 }
 
+                // Detección Edificios 800 Mbps
                 if (campVal.toUpperCase() === "EDIFICIOS 800 MBPS") {
                     totalEdificios++;
 
                     if (meshVal === '' || meshVal.toLowerCase() === 'null' || meshVal.toLowerCase() === 'nan') {
-                        alertsMesh.push(recordItem);
+                        rawAlertsMesh.push(recordItem);
                     } else {
                         conformes++;
                     }
                 }
             });
 
+            availableStatuses = Array.from(statusSet).sort();
+            
+            // Inicialmente seleccionamos todos EXCEPTO los que contienen "CANCELAD"
+            selectedStatuses = new Set(availableStatuses.filter(st => !st.includes('CANCELAD')));
+
+            buildMultiSelectUI();
+
+            // Actualizar Métricas Básicas
             document.getElementById('kpiTotal').textContent = totalRows.toLocaleString();
             document.getElementById('kpiEdificios').textContent = totalEdificios.toLocaleString();
             document.getElementById('kpiConformes').textContent = conformes.toLocaleString();
-            document.getElementById('kpiAlertas').textContent = alertsMesh.length.toLocaleString();
-            document.getElementById('kpiSinCampana').textContent = alertsCampana.length.toLocaleString();
 
             const edifPercent = totalRows > 0 ? (totalEdificios / totalRows) * 100 : 0;
             const confPercent = totalEdificios > 0 ? (conformes / totalEdificios) * 100 : 0;
-            const alertPercent = totalEdificios > 0 ? (alertsMesh.length / totalEdificios) * 100 : 0;
-            const campPercent = totalRows > 0 ? (alertsCampana.length / totalRows) * 100 : 0;
 
             document.getElementById('barEdificios').style.width = `${edifPercent}%`;
             document.getElementById('barConformes').style.width = `${confPercent}%`;
+
+            document.getElementById('kpiSection').classList.remove('hidden');
+
+            applyStatusFilter();
+        }
+
+        function buildMultiSelectUI() {
+            const container = document.getElementById('checkboxesContainer');
+            container.innerHTML = '';
+
+            availableStatuses.forEach(st => {
+                const isChecked = selectedStatuses.has(st);
+                const label = document.createElement('label');
+                label.className = "flex items-center gap-2 px-2 py-1 hover:bg-slate-50 rounded cursor-pointer text-xs font-semibold text-slate-700";
+                
+                label.innerHTML = `
+                    <input type="checkbox" value="${st}" ${isChecked ? 'checked' : ''} onchange="onStatusCheckboxChange(this)" class="rounded text-brand focus:ring-brand accent-brand h-4 w-4">
+                    <span>${st}</span>
+                `;
+                container.appendChild(label);
+            });
+
+            updateDropdownTextAndBadges();
+        }
+
+        function onStatusCheckboxChange(checkbox) {
+            const val = checkbox.value;
+            if (checkbox.checked) {
+                selectedStatuses.add(val);
+            } else {
+                selectedStatuses.delete(val);
+            }
+            updateDropdownTextAndBadges();
+            applyStatusFilter();
+        }
+
+        function selectAllStatuses(select) {
+            if (select) {
+                selectedStatuses = new Set(availableStatuses);
+            } else {
+                selectedStatuses.clear();
+            }
+            
+            const checkboxes = document.querySelectorAll('#checkboxesContainer input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = select);
+
+            updateDropdownTextAndBadges();
+            applyStatusFilter();
+        }
+
+        function updateDropdownTextAndBadges() {
+            const textSpan = document.getElementById('multiSelectText');
+            const badgesContainer = document.getElementById('activeStatusBadges');
+            badgesContainer.innerHTML = '';
+
+            if (selectedStatuses.size === 0) {
+                textSpan.textContent = "Ningún estado seleccionado";
+            } else if (selectedStatuses.size === availableStatuses.length) {
+                textSpan.textContent = `Todos los estados (${selectedStatuses.size})`;
+            } else {
+                textSpan.textContent = `${selectedStatuses.size} de ${availableStatuses.length} seleccionados`;
+            }
+
+            selectedStatuses.forEach(st => {
+                const badge = document.createElement('span');
+                badge.className = "px-2 py-0.5 rounded bg-brand/10 text-brand border border-brand/20 font-bold flex items-center gap-1";
+                badge.innerHTML = `${st} <i class="fa-solid fa-xmark text-[10px] cursor-pointer hover:text-brand-hover" onclick="removeStatusTag('${st}')"></i>`;
+                badgesContainer.appendChild(badge);
+            });
+        }
+
+        function removeStatusTag(st) {
+            selectedStatuses.delete(st);
+            const checkboxes = document.querySelectorAll('#checkboxesContainer input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if (cb.value === st) cb.checked = false;
+            });
+            updateDropdownTextAndBadges();
+            applyStatusFilter();
+        }
+
+        function applyStatusFilter() {
+            const filterFn = (item) => {
+                const st = (item.Estado || '').toUpperCase();
+                return selectedStatuses.has(st);
+            };
+
+            filteredMesh = rawAlertsMesh.filter(filterFn);
+            filteredCampana = rawAlertasCampana.filter(filterFn);
+
+            // Actualizar KPIs de Alertas con la cantidad filtrada
+            document.getElementById('kpiAlertas').textContent = filteredMesh.length.toLocaleString();
+            document.getElementById('kpiSinCampana').textContent = filteredCampana.length.toLocaleString();
+
+            const totalRows = parseInt(document.getElementById('kpiTotal').textContent.replace(/,/g, '')) || 1;
+            const alertPercent = (filteredMesh.length / totalRows) * 100;
+            const campPercent = (filteredCampana.length / totalRows) * 100;
+
             document.getElementById('barAlertas').style.width = `${alertPercent}%`;
             document.getElementById('barSinCampana').style.width = `${campPercent}%`;
 
-            document.getElementById('kpiSection').classList.remove('hidden');
+            // Actualizar Badges de pestañas
+            document.getElementById('badgeMeshCount').textContent = filteredMesh.length;
+            document.getElementById('badgeCampanaCount').textContent = filteredCampana.length;
 
             const statusBanner = document.getElementById('statusBanner');
             statusBanner.classList.remove('hidden');
 
-            if (alertsMesh.length > 0 || alertsCampana.length > 0) {
+            if (filteredMesh.length > 0 || filteredCampana.length > 0) {
                 statusBanner.innerHTML = `
                     <div class="panel-card border-l-4 border-l-brand rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-orange-50/40">
                         <div class="flex items-center gap-3">
@@ -438,7 +604,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-slate-900 text-sm">ATENCIÓN: OBSERVACIONES DETECTADAS EN QUANTUM</h4>
-                                <p class="text-xs text-slate-600">Se encontraron ${alertsMesh.length} casos de Edificios 800 Mbps sin modo Mesh y ${alertsCampana.length} registros sin Campaña (Sin Plan).</p>
+                                <p class="text-xs text-slate-600">Se filtraron ${filteredMesh.length} casos de Mesh Vacío y ${filteredCampana.length} registros sin Campaña correspondientes a los estados seleccionados.</p>
                             </div>
                         </div>
                     </div>`;
@@ -450,15 +616,12 @@
                                 <i class="fa-solid fa-circle-check"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-slate-900 text-sm">BASE AUDITADA CORRECTAMENTE</h4>
-                                <p class="text-xs text-slate-600">No se detectaron anomalías en Mesh ni en campañas vacías.</p>
+                                <h4 class="font-bold text-slate-900 text-sm">SIN OBSERVACIONES PARA ESTOS ESTADOS</h4>
+                                <p class="text-xs text-slate-600">No hay registros pendientes para el conjunto de estados activos.</p>
                             </div>
                         </div>
                     </div>`;
             }
-
-            document.getElementById('badgeMeshCount').textContent = alertsMesh.length;
-            document.getElementById('badgeCampanaCount').textContent = alertsCampana.length;
 
             renderTable();
         }
@@ -483,7 +646,7 @@
             const tbody = document.getElementById('reportTableBody');
             const reportSection = document.getElementById('reportSection');
             const btnExport = document.getElementById('btnExport');
-            const activeData = currentActiveTab === 'mesh' ? alertsMesh : alertsCampana;
+            const activeData = currentActiveTab === 'mesh' ? filteredMesh : filteredCampana;
 
             if (currentActiveTab === 'mesh') {
                 btnExport.className = "px-4 py-2 bg-brand hover:bg-brand-hover text-white text-xs font-semibold rounded-lg shadow-md shadow-brand/20 flex items-center gap-2 transition-all";
@@ -500,8 +663,8 @@
                             <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mx-auto mb-3">
                                 <i class="fa-solid fa-circle-check"></i>
                             </div>
-                            <p class="text-sm font-bold text-slate-800">No hay observaciones pendientes en esta categoría</p>
-                            <p class="text-xs text-slate-500 mt-1">Todos los registros cumplen las condiciones exigidas.</p>
+                            <p class="text-sm font-bold text-slate-800">No hay observaciones pendientes en esta vista</p>
+                            <p class="text-xs text-slate-500 mt-1">Intente seleccionar más estados en el filtro superior si desea evaluar otros requerimientos.</p>
                         </td>
                     </tr>`;
             } else {
@@ -548,7 +711,7 @@
         }
 
         function exportToCSV() {
-            const activeData = currentActiveTab === 'mesh' ? alertsMesh : alertsCampana;
+            const activeData = currentActiveTab === 'mesh' ? filteredMesh : filteredCampana;
             if (activeData.length === 0) {
                 alert('No hay registros para exportar en esta vista.');
                 return;
@@ -579,9 +742,9 @@
             return str + ' '.repeat(length - str.length);
         }
 
-        // FORMATO IGUAL AL GENERADO POR LA MACRO VBA EN ARCHIVO TXT
+        // FORMATO CORREGIDO: LA CANTIDAD SE MUESTRA UNA SOLA VEZ
         function copyWhatsAppFormat() {
-            const activeData = currentActiveTab === 'mesh' ? alertsMesh : alertsCampana;
+            const activeData = currentActiveTab === 'mesh' ? filteredMesh : filteredCampana;
             if (activeData.length === 0) {
                 alert('No hay registros para copiar en esta pestaña.');
                 return;
@@ -610,7 +773,6 @@
 
             lines.push("");
             lines.push(divider);
-            lines.push("TOTAL PENDIENTES: " + activeData.length);
             lines.push("");
 
             if (currentActiveTab === 'mesh') {
